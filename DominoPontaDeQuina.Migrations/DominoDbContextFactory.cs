@@ -1,4 +1,5 @@
 using DominoPontaDeQuina.Repository.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace DominoPontaDeQuina.Migrations;
@@ -7,6 +8,10 @@ public class DominoDbContextFactory : IDesignTimeDbContextFactory<DominoDbContex
 {
     public DominoDbContext CreateDbContext(string[] args)
     {
-        return new DominoDbContext();
+        var optionsBuilder = new DbContextOptionsBuilder<DominoDbContext>();
+        optionsBuilder.UseSqlite("Data Source=domino.db", sqliteOptions =>
+            sqliteOptions.MigrationsAssembly(typeof(DominoDbContextFactory).Assembly.GetName().Name));
+
+        return new DominoDbContext(optionsBuilder.Options);
     }
 }

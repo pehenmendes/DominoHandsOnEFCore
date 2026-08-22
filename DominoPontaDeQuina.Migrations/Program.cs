@@ -1,1 +1,6 @@
-Console.WriteLine("Projeto de inicializacao para as migrations do Entity Framework Core.");
+using DominoPontaDeQuina.Repository.Context;
+using Microsoft.EntityFrameworkCore;
+
+using var db = new DominoDbContext();
+await db.Database.MigrateAsync();
+Console.WriteLine("Migration aplicada com sucesso. Banco: domino.db");
