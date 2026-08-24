@@ -12,7 +12,7 @@ namespace DominoPontaDeQuina.Migrations.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Jogos",
+                name: "Partidas",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
@@ -22,7 +22,7 @@ namespace DominoPontaDeQuina.Migrations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Jogos", x => x.Id);
+                    table.PrimaryKey("PK_Partidas", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -60,11 +60,11 @@ namespace DominoPontaDeQuina.Migrations.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ParticipacoesJogo",
+                name: "ParticipacoesPartida",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    JogoId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PartidaId = table.Column<Guid>(type: "TEXT", nullable: false),
                     JogadorId = table.Column<Guid>(type: "TEXT", nullable: false),
                     Posicao = table.Column<int>(type: "INTEGER", nullable: false),
                     Pontuacao = table.Column<int>(type: "INTEGER", nullable: false),
@@ -72,17 +72,17 @@ namespace DominoPontaDeQuina.Migrations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ParticipacoesJogo", x => x.Id);
+                    table.PrimaryKey("PK_ParticipacoesPartida", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ParticipacoesJogo_Jogadores_JogadorId",
+                        name: "FK_ParticipacoesPartida_Jogadores_JogadorId",
                         column: x => x.JogadorId,
                         principalTable: "Jogadores",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ParticipacoesJogo_Jogos_JogoId",
-                        column: x => x.JogoId,
-                        principalTable: "Jogos",
+                        name: "FK_ParticipacoesPartida_Partidas_PartidaId",
+                        column: x => x.PartidaId,
+                        principalTable: "Partidas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -93,27 +93,34 @@ namespace DominoPontaDeQuina.Migrations.Migrations
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ParticipacoesJogo_JogadorId",
-                table: "ParticipacoesJogo",
+                name: "IX_ParticipacoesPartida_JogadorId",
+                table: "ParticipacoesPartida",
                 column: "JogadorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ParticipacoesJogo_JogoId",
-                table: "ParticipacoesJogo",
-                column: "JogoId");
+                name: "IX_ParticipacoesPartida_PartidaId_JogadorId",
+                table: "ParticipacoesPartida",
+                columns: new[] { "PartidaId", "JogadorId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Usuarios_Email",
+                table: "Usuarios",
+                column: "Email",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ParticipacoesJogo");
+                name: "ParticipacoesPartida");
 
             migrationBuilder.DropTable(
                 name: "Jogadores");
 
             migrationBuilder.DropTable(
-                name: "Jogos");
+                name: "Partidas");
 
             migrationBuilder.DropTable(
                 name: "Usuarios");
