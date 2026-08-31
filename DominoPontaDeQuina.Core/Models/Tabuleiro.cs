@@ -40,8 +40,15 @@ public class Tabuleiro
     /// <returns><see langword="true"/> quando a peca puder ser colada; caso contrario, <see langword="false"/>.</returns>
     public bool PodeColar(Peca peca, LadoTabuleiro lado)
     {
-        // TODO ALUNO: validar se a peca pode ser colada no lado escolhido.
-        throw new NotImplementedException();
+        if (EstaVazio)
+            return true;
+
+        return lado switch
+        {
+            LadoTabuleiro.Esquerda => peca.PossuiValor(PontaEsquerda!.Value),
+            LadoTabuleiro.Direita => peca.PossuiValor(PontaDireita!.Value),
+            _ => false
+        };
     }
 
     /// <summary>
@@ -52,8 +59,34 @@ public class Tabuleiro
     /// <param name="lado">O lado do tabuleiro.</param>
     public void Colar(Peca peca, LadoTabuleiro lado)
     {
-        // TODO ALUNO: posicionar a peca no lado escolhido, invertendo quando necessario.
-        throw new NotImplementedException();
+        if (!PodeColar(peca, lado))
+            throw new InvalidOperationException("A peça não pode ser colada no lado escolhido.");
+
+        if (EstaVazio)
+        {
+            Pecas.Add(peca);
+            return;
+        }
+
+        switch (lado)
+        {
+            case LadoTabuleiro.Esquerda:
+                if (peca.ValorB == PontaEsquerda)
+                    Pecas.Insert(0, peca);
+                else
+                    Pecas.Insert(0, peca.Inverter());
+                break;
+
+            case LadoTabuleiro.Direita:
+                if (peca.ValorA == PontaDireita)
+                    Pecas.Add(peca);
+                else
+                    Pecas.Add(peca.Inverter());
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(lado));
+        }
     }
 
     /// <summary>
@@ -72,9 +105,19 @@ public class Tabuleiro
     /// <returns><see langword="true"/> quando o tabuleiro estiver travado; caso contrario, <see langword="false"/>.</returns>
     public bool EstaTravado(IEnumerable<MaoJogador> maosJogadores)
     {
-        // TODO ALUNO: implementar a regra de travamento do tabuleiro.
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(maosJogadores);
+
+        if (EstaVazio)
+            return false;
+
+        return !maosJogadores.Any(mao =>
+            mao is not null && _PecasCompativeis(mao));
     }
+
+    private bool _PecasCompativeis(MaoJogador mao) =>
+        Pecas.Count > 0 && mao.Pecas.Any(peca =>
+            PodeColar(peca, LadoTabuleiro.Esquerda) ||
+            PodeColar(peca, LadoTabuleiro.Direita));
 
     /// <summary>
     /// Limpa o tabuleiro para preparar uma nova rodada.

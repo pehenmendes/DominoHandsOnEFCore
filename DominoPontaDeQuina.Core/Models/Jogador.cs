@@ -17,4 +17,8 @@ public class Jogador(string nome)
     /// Obtem o nome exibido do jogador na partida.
     /// </summary>
     public string Nome { get; } = nome;
+
+    internal Time? Time { get; private set; }
+
+    internal void DefinirTime(Time time) => Time = time;
 }

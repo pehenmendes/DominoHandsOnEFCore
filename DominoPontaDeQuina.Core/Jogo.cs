@@ -30,8 +30,25 @@ public class Jogo()
     /// </summary>
     public Task RegistrarTimesAsync()
     {
-        // TODO ALUNO: registrar os times e jogadores da partida antes do inicio da primeira rodada.
-        throw new NotImplementedException();
+        if (PartidaAtual is null)
+            throw new InvalidOperationException("Não há partida atual para registrar os times.");
+
+        if (PartidaAtual.Status is not StatusPartida.NaoIniciada)
+            throw new InvalidOperationException("Os times só podem ser registrados antes do início da partida.");
+
+        // Configuração padrão da aplicação: dois times com dois jogadores cada.
+        var timeA = new Time("Time A");
+        var timeB = new Time("Time B");
+
+        timeA.AdicionarJogador(new Jogador("Jogador 1"));
+        timeA.AdicionarJogador(new Jogador("Jogador 2"));
+        timeB.AdicionarJogador(new Jogador("Jogador 3"));
+        timeB.AdicionarJogador(new Jogador("Jogador 4"));
+
+        PartidaAtual.Times.Add(timeA);
+        PartidaAtual.Times.Add(timeB);
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -128,8 +145,27 @@ public class Jogo()
     /// <returns><see langword="true"/> quando a jogada for valida; caso contrario, <see langword="false"/>.</returns>
     public bool ValidarJogada(Jogada jogada)
     {
-        // TODO ALUNO: validar se a jogada e compativel com o estado atual do tabuleiro.
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(jogada);
+
+        if (PartidaAtual?.RodadaAtual is null || PartidaAtual.RodadaAtual.Status is not StatusRodada.EmAndamento)
+            return false;
+
+        if (!ReferenceEquals(jogada.Jogador, PartidaAtual.RodadaAtual.JogadorAtual.Jogador))
+            return false;
+
+        // Passar a vez é válido apenas quando nenhuma peça da mão pode ser jogada.
+        if (jogada.EhPassarVez())
+        {
+            var mao = PartidaAtual.RodadaAtual.JogadorAtual;
+            return mao.Pecas.All(peca =>
+                !PartidaAtual.RodadaAtual.Tabuleiro.PodeColar(peca, LadoTabuleiro.Esquerda) &&
+                !PartidaAtual.RodadaAtual.Tabuleiro.PodeColar(peca, LadoTabuleiro.Direita));
+        }
+
+        if (jogada.Peca is null || jogada.Lado is null)
+            return false;
+
+        return PartidaAtual.RodadaAtual.Tabuleiro.PodeColar(jogada.Peca.Value, jogada.Lado.Value);
     }
 
     /// <summary>

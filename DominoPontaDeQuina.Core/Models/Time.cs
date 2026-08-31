@@ -38,6 +38,7 @@ public class Time(string nome)
         ArgumentNullException.ThrowIfNull(jogador);
 
         Jogadores.Add(jogador);
+        jogador.DefinirTime(this);
     }
 
     /// <summary>
